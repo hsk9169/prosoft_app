@@ -39,8 +39,11 @@ class _MeasrImageView extends State<MeasrImageView> {
 
   Future<MeasrImage> _getMeasrImage() async {
     return await _apiService
-        .getMeasrImage('010-3576-9365', '2023-02-01-1055-0017')
-        //.getMeasrImage(_userInfo.phoneNumber!, '2023-02-01-1055-0017')
+        .getMeasrImage(
+            _userInfo.phoneNumber!,
+            Provider.of<Session>(context, listen: false)
+                .waitingOrder[0]
+                .measrInNo!)
         .whenComplete(() =>
             Provider.of<Platform>(context, listen: false).isLoading = false);
   }

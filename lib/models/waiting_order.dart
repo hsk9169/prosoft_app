@@ -1,12 +1,12 @@
 class WaitingOrder {
   final String? matlName;
   final String? measrFullNo;
-  final int? barcodeId;
+  final String? barcodeId;
   final String? measrGbnCode;
   final String? scrapYardCode;
   final String? currentTime;
   final String? waitingStatusCode;
-  final String? waitingYN;
+  final String? measrInNo;
   final String? step1Time;
   final String? step2Time;
   final String? step3Time;
@@ -28,7 +28,7 @@ class WaitingOrder {
     this.scrapYardCode,
     this.currentTime,
     this.waitingStatusCode,
-    this.waitingYN,
+    this.measrInNo,
     this.step1Time,
     this.step2Time,
     this.step3Time,
@@ -44,28 +44,27 @@ class WaitingOrder {
   });
 
   factory WaitingOrder.fromJson(Map<String, dynamic> json) {
-    final data = json['data']['list'][0];
     return WaitingOrder(
-      matlName: data['MATL_NAME'] ?? '',
-      measrFullNo: data['MEASR_FULL_NO'] ?? '',
-      barcodeId: data['BARCODE_ID'] ?? '',
-      measrGbnCode: data['MEASR_GBN_CODE'] ?? '',
-      scrapYardCode: data['SCRAP_YARD_CODE'] ?? '',
-      currentTime: data['CURRENT_TIME'] ?? '',
-      waitingStatusCode: data['WAITING_STATUS_CODE'] ?? '',
-      waitingYN: data['WAITING_YN'] ?? '',
-      step1Time: data['STEP_1_TIME'] ?? '',
-      step2Time: data['STEP_2_TIME'] ?? '',
-      step3Time: data['STEP_3_TIME'] ?? '',
-      step4Time: data['STEP_4_TIME'] ?? '',
-      step5Time: data['STEP_5_TIME'] ?? '',
-      step6Time: data['STEP_6_TIME'] ?? '',
-      step1Data: data['STEP_1_DATA'] ?? '',
-      step2Data: data['STEP_2_DATA'] ?? '',
-      step3Data: data['STEP_3_DATA'] ?? '',
-      step4Data: data['STEP_4_DATA'] ?? '',
-      step5Data: data['STEP_5_DATA'] ?? '',
-      step6Data: data['STEP_6_DATA'] ?? '',
+      matlName: json['MATL_NAME'] ?? '',
+      measrFullNo: json['MEASR_FULL_NO'] ?? '',
+      barcodeId: json['BARCODE_ID'] ?? '',
+      measrGbnCode: json['MEASR_GBN_CODE'] ?? '',
+      scrapYardCode: json['SCRAP_YARD_CODE'] ?? '',
+      currentTime: json['CURRENT_TIME'] ?? '',
+      waitingStatusCode: json['WAITING_STATUS_CODE'] ?? '',
+      measrInNo: json['MEASR_IN_NO'] ?? '',
+      step1Time: json['STEP_1_TIME'] ?? '',
+      step2Time: json['STEP_2_TIME'] ?? '',
+      step3Time: json['STEP_3_TIME'] ?? '',
+      step4Time: json['STEP_4_TIME'] ?? '',
+      step5Time: json['STEP_5_TIME'] ?? '',
+      step6Time: json['STEP_6_TIME'] ?? '',
+      step1Data: json['STEP_1_DATA'] ?? '',
+      step2Data: json['STEP_2_DATA'] ?? '',
+      step3Data: json['STEP_3_DATA'] ?? '',
+      step4Data: json['STEP_4_DATA'] ?? '',
+      step5Data: json['STEP_5_DATA'] ?? '',
+      step6Data: json['STEP_6_DATA'] ?? '',
     );
   }
 
@@ -73,12 +72,11 @@ class WaitingOrder {
   Map<String, dynamic> toJson() => {
         'matlName': matlName,
         'measrFullNo': measrFullNo,
-        'barcodeId': barcodeId.toString(),
+        'barcodeId': barcodeId,
         'measrGbnCode': measrGbnCode,
         'scrapYardCode': scrapYardCode,
         'currentTime': currentTime,
         'waitingStatusCode': waitingStatusCode,
-        'waitingYN': waitingYN,
         'step1Time': step1Time,
         'step2Time': step2Time,
         'step3Time': step3Time,

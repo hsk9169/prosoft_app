@@ -1,8 +1,8 @@
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prosoft_proj/services/api_service.dart';
 import 'package:prosoft_proj/services/encrypted_storage_service.dart';
 import 'package:prosoft_proj/providers/platform_provider.dart';
@@ -11,6 +11,7 @@ import 'package:prosoft_proj/consts/sizes.dart';
 import 'package:prosoft_proj/consts/colors.dart';
 import 'package:prosoft_proj/routes.dart';
 import 'package:prosoft_proj/screens/screens.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class SplashView extends StatefulWidget {
   @override
@@ -42,8 +43,7 @@ class _SplashView extends State<SplashView> {
       if (await _tryAutoLogin()) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => const ServiceView(screenNumber: 2)),
+          MaterialPageRoute(builder: (context) => ServiceView()),
           (Route<dynamic> route) => false,
         );
       } else {
@@ -73,13 +73,22 @@ class _SplashView extends State<SplashView> {
   }
 
   Future<bool> _tryAutoLogin() async {
+    _platformProvider.platformType =
+        Theme.of(context).platform == TargetPlatform.iOS ? 'IOS' : 'ANDROID';
+    await FirebaseMessaging.instance.getToken().then((value) {
+      _platformProvider.fcmToken = value;
+      print(value.toString());
+    });
     if (_platformProvider.isAutoLoginChecked) {
       _platformProvider.phoneNumber =
           await _encryptedStorageService.readData('phone_number');
       _platformProvider.password =
           await _encryptedStorageService.readData('password');
-      final res =
-          await _apiService.login('010-3847-7447', '1234', 'test', 'IOS');
+      final res = await _apiService.login(
+          _platformProvider.phoneNumber,
+          _platformProvider.password,
+          _platformProvider.fcmToken,
+          _platformProvider.platformType);
       if (res.runtimeType == String) {
         return false;
       } else {
@@ -93,14 +102,28 @@ class _SplashView extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        width: context.pWidth,
-        height: context.pHeight,
-        child: Center(
-            child: CupertinoActivityIndicator(
-          animating: true,
-          radius: context.pWidth * 0.05,
-        )));
+    return Scaffold(
+      body: Container(
+          color: AppColors.darkOrange,
+          width: context.pWidth,
+          height: context.pHeight,
+          alignment: Alignment.center,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/icons/logo_simple.svg',
+                    color: Colors.white, width: context.pWidth * 0.6),
+                Padding(padding: EdgeInsets.all(context.pHeight * 0.02)),
+                SizedBox(
+                    width: context.pWidth * 0.3,
+                    height: context.pHeight * 0.02,
+                    child: const LoadingIndicator(
+                      indicatorType: Indicator.ballPulse,
+                      colors: [Colors.white],
+                      strokeWidth: 1,
+                    ))
+              ])),
+    );
   }
 }

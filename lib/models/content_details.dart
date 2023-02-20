@@ -5,7 +5,7 @@ class ContentDetails {
   final String? carSelTime;
   final String? matlName;
   final String? fulfillWgt;
-  final int? barcodeId;
+  final String? barcodeId;
   final String? rfidNo;
   final String? gateOutTime;
   final String? carFullNo;
@@ -48,30 +48,29 @@ class ContentDetails {
   });
 
   factory ContentDetails.fromJson(Map<String, dynamic> json) {
-    final data = json['data']['list'][0];
     return ContentDetails(
-      custCode: data['CUST_CODE'] ?? '',
-      custName: data['CUST_NAME'] ?? '',
-      gateInTime: data['GATE_IN_TIME'] ?? '',
-      carSelTime: data['CAR_SEL_TIME'] ?? '',
-      matlName: data['MATL_NAME'] ?? '',
-      fulfillWgt: data['FULFILL_WGT'] ?? '',
-      barcodeId: data['BARCODE_ID'] ?? 0,
-      rfidNo: data['RFID_NO'] ?? '',
-      gateOutTime: data['GATE_OUT_TIME'] ?? '',
-      carFullNo: data['CAR_FULL_NO'] ?? '',
-      driverName: data['DRIVER_NAME'] ?? '',
-      inspResult: data['INSP_RESULT'] ?? '',
-      driverPhoneNo: data['DRIVER_PHONE_NO'] ?? '',
-      measrOutTime: data['MEASR_OUT_TIME'] ?? '',
-      inStoreDate: data['IN_STORE_DATE'] ?? '',
-      inspProcTime: data['INSP_PROC_TIME'] ?? '',
-      measrInTime: data['MEASR_IN_TIME'] ?? '',
-      reservNo: data['RESERV_NO'] ?? '',
-      scrapYardName: data['SCRAP_YARD_NAME'] ?? '',
-      toleranceWgt: data['TOLERANCE_WGT'] ?? '',
-      classNo: data['CLASS'] ?? '',
-      inspector: data['INSPECTOR'] ?? '',
+      custCode: json['CUST_CODE'] ?? 'NULL',
+      custName: json['CUST_NAME'] ?? 'NULL',
+      gateInTime: json['GATE_IN_TIME'] ?? 'NULL',
+      carSelTime: json['CAR_SEL_TIME'] ?? 'NULL',
+      matlName: json['MATL_NAME'] ?? 'NULL',
+      fulfillWgt: json['FULFILL_WGT'] ?? 'NULL',
+      barcodeId: json['BARCODE_ID'] ?? 'NULL',
+      rfidNo: json['RFID_NO'] ?? 'NULL',
+      gateOutTime: json['GATE_OUT_TIME'] ?? 'NULL',
+      carFullNo: json['CAR_FULL_NO'] ?? 'NULL',
+      driverName: json['DRIVER_NAME'] ?? 'NULL',
+      inspResult: json['INSP_RESULT'] ?? 'NULL',
+      driverPhoneNo: json['DRIVER_PHONE_NO'] ?? 'NULL',
+      measrOutTime: json['MEASR_OUT_TIME'] ?? 'NULL',
+      inStoreDate: json['IN_STORE_DATE'] ?? 'NULL',
+      inspProcTime: json['INSP_PROC_TIME'] ?? 'NULL',
+      measrInTime: json['MEASR_IN_TIME'] ?? 'NULL',
+      reservNo: json['RESERV_NO'] ?? 'NULL',
+      scrapYardName: json['SCRAP_YARD_NAME'] ?? 'NULL',
+      toleranceWgt: json['TOLERANCE_WGT'] ?? 'NULL',
+      classNo: json['CLASS'] ?? 'NULL',
+      inspector: json['INSPECTOR'] ?? 'NULL',
     );
   }
 
@@ -83,7 +82,7 @@ class ContentDetails {
         'carSelTime': carSelTime,
         'matlName': matlName,
         'fulfillWgt': fulfillWgt,
-        'barcodeId': barcodeId.toString(),
+        'barcodeId': barcodeId,
         'rfidNo': rfidNo,
         'gateOutTime': gateOutTime,
         'carFullNo': carFullNo,

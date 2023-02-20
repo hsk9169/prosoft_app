@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prosoft_proj/screens/screens.dart';
 import 'package:prosoft_proj/consts/colors.dart';
 import 'package:prosoft_proj/consts/sizes.dart';
 import 'package:prosoft_proj/providers/platform_provider.dart';
 import 'package:prosoft_proj/providers/session_provider.dart';
+import 'package:prosoft_proj/services/encrypted_storage_service.dart';
 import 'package:prosoft_proj/widgets/app_bar_contents.dart';
-import '../firebase_options.dart';
 import 'package:prosoft_proj/routes.dart';
-import 'package:prosoft_proj/screens/screens.dart';
+import 'package:prosoft_proj/models/models.dart';
+import 'package:prosoft_proj/services/api_service.dart';
+import 'package:prosoft_proj/consts/screen_code.dart';
 
 class ServiceView extends StatefulWidget {
-  final int? screenNumber;
-  const ServiceView({this.screenNumber});
   @override
   State<StatefulWidget> createState() => _ServiceView();
 }
@@ -26,7 +27,7 @@ class _ServiceView extends State<ServiceView> {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  final notificationDetails = NotificationDetails(
+  final notificationDetails = const NotificationDetails(
     // Android details
     android: AndroidNotificationDetails('main_channel', 'Main Channel',
         channelDescription: "ashwin",
@@ -38,29 +39,67 @@ class _ServiceView extends State<ServiceView> {
 
   // State
   bool isMessage = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    //_initMessaging();
+    _initMessaging();
     super.initState();
+    _initData();
+    _checkMsg();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
   }
 
-  void _onTapLogout() {
-    Navigator.pushNamedAndRemoveUntil(context, Routes.SIGNIN, (route) => false);
+  void _initData() async {
+    final session = Provider.of<Session>(context, listen: false);
+    await ApiService()
+        .getMainList(session.userInfo.phoneNumber!)
+        .then((value) => session.contentList = value);
   }
 
-  Widget? _bodyWidget() {
-    switch (widget.screenNumber) {
+  void _checkMsg() async {
+    final phoneNumber =
+        Provider.of<Platform>(context, listen: false).phoneNumber;
+    await ApiService().getLatestMsg(phoneNumber).then((data) {
+      if (data is String) {
+        Provider.of<Platform>(context, listen: false).screenNumber = 0;
+      } else {
+        Provider.of<Platform>(context, listen: false).screenNumber =
+            ScreenCode.dict.containsKey(data.appPgmId!)
+                ? ScreenCode.dict[data.appPgmId!]!
+                : 0;
+      }
+    });
+  }
+
+  void _onTapLogout() async {
+    await EncryptedStorageService().deleteAllData().whenComplete(() =>
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.SIGNIN, (route) => false));
+  }
+
+  Widget? _bodyWidget(int screenNumber) {
+    switch (screenNumber) {
       case 0:
-        return const MainView(index: 0);
+        return MainView();
       case 1:
-        return const MainView(index: 1);
+        return BarcodeIssueView();
       case 2:
-        return MeasrImageView();
+        return WaitingOrderView();
+      case 3:
+        return WaitingStatusView();
+      //case 4:
+      //  return ContentDetailsView();
+      //case 5:
+      //  return MeasrImageView();
       default:
         break;
     }
+  }
+
+  void _onTapItem(int num) async {
+    Provider.of<Platform>(context, listen: false).screenNumber = num;
+    Navigator.pop(context);
   }
 
   @override
@@ -70,50 +109,122 @@ class _ServiceView extends State<ServiceView> {
         Provider.of<Platform>(context, listen: true).isMessageRecieved;
     bool isErrorMessagePoppedUp =
         Provider.of<Platform>(context, listen: true).isErrorMessagePoppedUp;
+    int screenNumber =
+        Provider.of<Platform>(context, listen: true).screenNumber;
 
     _showErrorDialog(isErrorMessagePoppedUp);
 
     final String userName =
         Provider.of<Session>(context, listen: false).userInfo.name!;
-
+    final Color bgColor = screenNumber > 1
+        ? Colors.white
+        : const Color.fromARGB(255, 232, 231, 231);
     return AbsorbPointer(
         absorbing: isLoading,
         child: Stack(children: [
           Scaffold(
-              resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
-              appBar: PreferredSize(
-                preferredSize: Size(context.pWidth, context.pHeight * 0.06),
-                child: AppBar(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: false,
+            backgroundColor: bgColor,
+            appBar: PreferredSize(
+              preferredSize: Size(context.pWidth, context.pHeight * 0.05),
+              child: AppBar(
                   titleSpacing: 0,
-                  backgroundColor: Colors.white,
-                  title: AppBarContents(
-                      width: context.pWidth,
-                      id: userName,
-                      onTapButton: _onTapLogout),
+                  backgroundColor: bgColor,
+                  title: AppBarContents(id: userName),
                   elevation: 0,
-                ),
-              ),
-              body: _bodyWidget())
+                  leading: Padding(
+                      padding: EdgeInsets.all(context.pWidth * 0.01),
+                      child: IconButton(
+                          icon: Icon(Icons.list,
+                              color: AppColors.mediumGrey,
+                              size: context.pWidth * 0.1),
+                          onPressed: () =>
+                              _scaffoldKey.currentState!.openDrawer()))),
+            ),
+            body: _bodyWidget(screenNumber),
+            drawer: _sideDrawer(userName),
+          ),
+          isLoading
+              ? Container(
+                  width: context.pWidth,
+                  height: context.pHeight,
+                  color: Colors.grey.withOpacity(0.4),
+                  child: CupertinoActivityIndicator(
+                      radius: context.pHeight * 0.02))
+              : const SizedBox()
         ]));
+  }
+
+  Widget _sideDrawer(String id) {
+    return Drawer(
+      backgroundColor: const Color.fromARGB(255, 97, 99, 105),
+      width: context.pWidth * 0.75,
+      child: Column(
+        children: [
+          DrawerHeader(
+              margin: EdgeInsets.all(0),
+              padding: EdgeInsets.all(0),
+              child: Column(children: [
+                ListTile(
+                    leading: InkWell(
+                        child: Icon(Icons.close_rounded,
+                            color: Colors.white, size: context.pHeight * 0.04),
+                        onTap: () => Navigator.pop(context))),
+                ListTile(
+                    leading: Icon(Icons.person,
+                        color: Colors.white, size: context.pHeight * 0.04),
+                    title: Text('$id 님 환영합니다.',
+                        style: TextStyle(
+                            fontSize: context.pHeight * 0.025,
+                            fontFamily: 'SUIT',
+                            fontWeight: context.boldWeight,
+                            color: Colors.white)),
+                    onTap: null)
+              ])),
+          Container(
+              padding: EdgeInsets.only(left: context.pWidth * 0.04),
+              height: context.pHeight * 0.6,
+              child: Column(children: [
+                ListTile(
+                  leading: SvgPicture.asset('assets/icons/barcode.svg',
+                      width: context.pWidth * 0.055, color: Colors.white),
+                  title: Text('모바일 바코드 조회',
+                      style: TextStyle(
+                          fontSize: context.pHeight * 0.022,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  onTap: () => _onTapItem(0),
+                ),
+                Padding(padding: EdgeInsets.all(context.pHeight * 0.01)),
+                ListTile(
+                  leading: SvgPicture.asset('assets/icons/printer.svg',
+                      width: context.pWidth * 0.055, color: Colors.white),
+                  title: Text('모바일 바코드 발행',
+                      style: TextStyle(
+                          fontSize: context.pHeight * 0.022,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  onTap: () => _onTapItem(1),
+                ),
+              ])),
+          ListTile(
+              leading: Icon(Icons.logout,
+                  color: Colors.white, size: context.pHeight * 0.03),
+              title: Text('로그아웃',
+                  style: TextStyle(
+                      fontSize: context.pHeight * 0.025,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+              onTap: () => _onTapLogout()),
+        ],
+      ),
+    );
   }
 
   void _initMessaging() async {
     final _platformProvider = Provider.of<Platform>(context, listen: false);
     final _sessionProvider = Provider.of<Session>(context, listen: false);
-
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    await FirebaseMessaging.instance.getToken().then((value) =>
-        Provider.of<Platform>(context, listen: false).fcmToken = value!);
 
     const IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
@@ -152,12 +263,13 @@ class _ServiceView extends State<ServiceView> {
       if (notification != null) {
         //Provider.of<Platform>(context, listen: false).popupErrorMessage = '0';
         setState(() => isMessage = !isMessage);
-        showLocalNotification(message.data, true);
+        showLocalNotification(message, true);
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      selectNotification(message.data['alarm_type']);
+      print(message.data);
+      selectNotification(message.data['PGM_ID']);
     });
   }
 
@@ -168,33 +280,18 @@ class _ServiceView extends State<ServiceView> {
 
     if (notification != null) {
       setState(() => isMessage = !isMessage);
-      showLocalNotification(message.data, false);
+      showLocalNotification(message, false);
     }
   }
 
   Future<void> showLocalNotification(
-      Map<String, dynamic> data, bool isForeground) async {
+      RemoteMessage message, bool isForeground) async {
     var platform = Theme.of(context).platform;
-    //final String maxloadTitle = Provider.of<Session>(context, listen: false)
-    //    .customerInfo
-    //    .fcmMaxloadTitle;
-    //final String maxloadBody = Provider.of<Session>(context, listen: false)
-    //    .customerInfo
-    //    .fcmMaxloadBody;
-    //final String mitigationTitle = Provider.of<Session>(context, listen: false)
-    //    .customerInfo
-    //    .fcmReduceTitle;
-    //final String mitigationBody =
-    //    Provider.of<Session>(context, listen: false).customerInfo.fcmReduceBody;
-    final String alarm_type = data['alarm_type'];
-    final String startTime = data['hhmi1'] ?? '';
-    final String endTime = data['hhmi2'] ?? '';
-    final String time = data['hhmi'] ?? '';
-    final DateTime mitigationDate = time == ''
-        ? DateTime.now()
-        : DateTime.fromMillisecondsSinceEpoch(int.parse(time)).toUtc();
-    //Provider.of<Platform>(context, listen: false).popupErrorMessage = '1';
-    _showErrorDialog(true);
+
+    final String appPgmId = message.data['PGM_ID'];
+
+    _flutterLocalNotificationsPlugin.show(0, message.notification!.title,
+        message.notification!.body, notificationDetails);
 
     /*
     switch (alarm_type) {
@@ -254,17 +351,9 @@ class _ServiceView extends State<ServiceView> {
     */
   }
 
-  Future<void> selectNotification(String payload) async {
-    switch (payload) {
-      case 'maxload':
-        //Navigator.pushNamed(context, Routes.SERVICE, arguments: 0);
-        break;
-      case 'reduce':
-        //Navigator.pushNamed(context, Routes.SERVICE, arguments: 1);
-        break;
-      default:
-        break;
-    }
+  Future<void> selectNotification(String pgmId) async {
+    Provider.of<Platform>(context, listen: false).screenNumber =
+        ScreenCode.dict.containsKey(pgmId) ? ScreenCode.dict[pgmId]! : 0;
   }
 
   void _showErrorDialog(bool isError) {

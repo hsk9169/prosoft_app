@@ -16,26 +16,14 @@ class WaitingStatus {
   });
 
   factory WaitingStatus.fromJson(Map<String, dynamic> json) {
-    final data = json['data']['list'];
-    if (data.length > 0) {
-      return WaitingStatus(
-        measrGbnCode: data['MEASR_GBN_CODE'] ?? '',
-        scrapYardCode: data['SCRAP_YARD_CODE'] ?? '',
-        waitingSeq: data['WAITING_SEQ'] ?? '',
-        carFullNo: data['CAR_FULL_NO'] ?? '',
-        visitName: data['VISIT_NAME'] ?? '',
-        measrStatus: data['MEASR_STATUS'] ?? '',
-      );
-    } else {
-      return WaitingStatus(
-        measrGbnCode: '',
-        scrapYardCode: '',
-        waitingSeq: '',
-        carFullNo: '',
-        visitName: '',
-        measrStatus: '',
-      );
-    }
+    return WaitingStatus(
+      measrGbnCode: json['MEASR_GBN_CODE'] ?? 'NULL',
+      scrapYardCode: json['SCRAP_YARD_CODE'] ?? 'NULL',
+      waitingSeq: json['WAITING_SEQ'] ?? 'NULL',
+      carFullNo: json['CAR_FULL_NO'] ?? 'NULL',
+      visitName: json['VISIT_NAME'] ?? 'NULL',
+      measrStatus: json['MEASR_STATUS'] ?? 'NULL',
+    );
   }
 
   // For debugging

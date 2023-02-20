@@ -1,7 +1,7 @@
 class MeasrImage {
   final String? measrFullNo;
   final String? image;
-  final int? barcodeId;
+  final String? barcodeId;
   final String? rfidNo;
   final String? measrInNo;
 
@@ -28,7 +28,7 @@ class MeasrImage {
   Map<String, dynamic> toJson() => {
         'measrFullNo': measrFullNo,
         'image': image,
-        'barcodeId': barcodeId.toString(),
+        'barcodeId': barcodeId,
         'rfidNo': rfidNo,
         'measrInNo': measrInNo,
       };

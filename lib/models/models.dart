@@ -5,3 +5,4 @@ export 'waiting_order.dart';
 export 'waiting_status.dart';
 export 'fcm_message.dart';
 export 'measr_image.dart';
+export 'issue_barcode.dart';

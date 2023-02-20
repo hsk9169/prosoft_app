@@ -35,8 +35,7 @@ class FcmMessage {
     this.measrInNo,
   });
 
-  factory FcmMessage.fromJson(Map<String, dynamic> data) {
-    final json = data['data']['list'];
+  factory FcmMessage.fromJson(Map<String, dynamic> json) {
     return FcmMessage(
       msgBody: json['MSG_BODY'] ?? '',
       measrFullNo: json['MEASR_FULL_NO'] ?? '',

@@ -60,8 +60,12 @@ class ApiService {
             'MOBILE_NAME': name,
           }));
       if (res.statusCode == 200) {
-        final body = jsonDecode(utf8.decode(res.bodyBytes));
-        return body['data']['updateCnt'];
+        final json = jsonDecode(utf8.decode(res.bodyBytes));
+        if (json['data']['updateCnt'] > 0) {
+          return 'SUCCESS';
+        } else {
+          return 'FAILED';
+        }
       }
     } catch (err) {
       if (err is SocketException) {
@@ -112,6 +116,45 @@ class ApiService {
     }
   }
 
+  Future<dynamic> getBarcodeIssueList(String phoneNumber, String date) async {
+    try {
+      final res = await http.post(
+          Uri(
+              scheme: 'http',
+              host: _hostAddress,
+              port: 9999,
+              path: '/getWarehousePlan'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          body: jsonEncode(<String, String>{
+            "MOBILE_ID": phoneNumber,
+            "IN_STORE_DATE": date,
+          }));
+      if (res.statusCode == 200) {
+        final body = jsonDecode(utf8.decode(res.bodyBytes));
+        return body['data']['list']
+            .map<IssueBarcode>(
+                (dynamic element) => IssueBarcode.fromJson(element))
+            .toList();
+      } else if (res.statusCode == 400 ||
+          res.statusCode == 401 ||
+          res.statusCode == 402) {
+        return 'BAD_REQUEST';
+      } else {
+        return 'SERVER_ERROR';
+      }
+    } catch (err) {
+      if (err is SocketException) {
+        return 'SOCKET_EXCEPTION';
+      } else if (err is TimeoutException) {
+        return 'SERVER_TIMEOUT';
+      } else {
+        return 'UNKNOWN_ERROR';
+      }
+    }
+  }
+
   Future<dynamic> getWaitingOrder(
       String phoneNumber, String barcodeId, String rfidNumber) async {
     try {
@@ -130,7 +173,8 @@ class ApiService {
             "RFID_NO": rfidNumber,
           }));
       if (res.statusCode == 200) {
-        return WaitingOrder.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
+        final body = jsonDecode(utf8.decode(res.bodyBytes));
+        return body['data']['list'];
       } else if (res.statusCode == 400 ||
           res.statusCode == 401 ||
           res.statusCode == 402) {
@@ -167,7 +211,11 @@ class ApiService {
             "SCRAP_YARD_CODE": scrapYardCode,
           }));
       if (res.statusCode == 200) {
-        return WaitingStatus.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
+        final body = jsonDecode(utf8.decode(res.bodyBytes));
+        return body['data']['list']
+            .map<WaitingStatus>(
+                (dynamic element) => WaitingStatus.fromJson(element))
+            .toList();
       } else if (res.statusCode == 400 ||
           res.statusCode == 401 ||
           res.statusCode == 402) {
@@ -204,7 +252,12 @@ class ApiService {
             "RFID_NO": rfidNo,
           }));
       if (res.statusCode == 200) {
-        return ContentDetails.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
+        final body = jsonDecode(utf8.decode(res.bodyBytes));
+        if (body['data']['list'] != null) {
+          return ContentDetails.fromJson(body['data']['list'][0]);
+        } else {
+          return 'FAILED';
+        }
       } else if (res.statusCode == 400 ||
           res.statusCode == 401 ||
           res.statusCode == 402) {
@@ -273,7 +326,12 @@ class ApiService {
             "MOBILE_ID": phoneNumber,
           }));
       if (res.statusCode == 200) {
-        return FcmMessage.fromJson(jsonDecode(utf8.decode(res.bodyBytes)));
+        final json = jsonDecode(utf8.decode(res.bodyBytes));
+        if (json['data']['list'] != null) {
+          return FcmMessage.fromJson(json['data']['list']);
+        } else {
+          return 'FAILED';
+        }
       } else if (res.statusCode == 400 ||
           res.statusCode == 401 ||
           res.statusCode == 402) {
@@ -311,6 +369,130 @@ class ApiService {
           }));
       if (res.statusCode == 200) {
         return 'SUCCESS';
+      } else if (res.statusCode == 400 ||
+          res.statusCode == 401 ||
+          res.statusCode == 402) {
+        return 'BAD_REQUEST';
+      } else {
+        return 'SERVER_ERROR';
+      }
+    } catch (err) {
+      if (err is SocketException) {
+        return 'SOCKET_EXCEPTION';
+      } else if (err is TimeoutException) {
+        return 'SERVER_TIMEOUT';
+      } else {
+        return 'UNKNOWN_ERROR';
+      }
+    }
+  }
+
+  Future<dynamic> getUserInfo(String phoneNumber, String name) async {
+    try {
+      final res = await http.post(
+          Uri(
+              scheme: 'http',
+              host: _hostAddress,
+              port: 9999,
+              path: '/getUserInfo'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          body: jsonEncode(<String, String>{
+            "MOBILE_ID": phoneNumber,
+            "MOBILE_NAME": name,
+          }));
+      if (res.statusCode == 200) {
+        final json = jsonDecode(utf8.decode(res.bodyBytes));
+        if (json['data']['list'] != null) {
+          return 'SUCCESS';
+        } else {
+          return 'FAILED';
+        }
+      } else if (res.statusCode == 400 ||
+          res.statusCode == 401 ||
+          res.statusCode == 402) {
+        return 'BAD_REQUEST';
+      } else {
+        return 'SERVER_ERROR';
+      }
+    } catch (err) {
+      if (err is SocketException) {
+        return 'SOCKET_EXCEPTION';
+      } else if (err is TimeoutException) {
+        return 'SERVER_TIMEOUT';
+      } else {
+        return 'UNKNOWN_ERROR';
+      }
+    }
+  }
+
+  Future<dynamic> updatePwd(String phoneNumber, String password) async {
+    try {
+      final res = await http.post(
+          Uri(
+              scheme: 'http',
+              host: _hostAddress,
+              port: 9999,
+              path: '/setRstPwd'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          body: jsonEncode(<String, String>{
+            "MOBILE_ID": phoneNumber,
+            "MOBILE_PWD": password,
+          }));
+      if (res.statusCode == 200) {
+        final json = jsonDecode(utf8.decode(res.bodyBytes));
+        if (json['data']['updateCnt'] > 0) {
+          return 'SUCCESS';
+        } else {
+          return 'FAILED';
+        }
+      } else if (res.statusCode == 400 ||
+          res.statusCode == 401 ||
+          res.statusCode == 402) {
+        return 'BAD_REQUEST';
+      } else {
+        return 'SERVER_ERROR';
+      }
+    } catch (err) {
+      if (err is SocketException) {
+        return 'SOCKET_EXCEPTION';
+      } else if (err is TimeoutException) {
+        return 'SERVER_TIMEOUT';
+      } else {
+        return 'UNKNOWN_ERROR';
+      }
+    }
+  }
+
+  Future<dynamic> issueBarcode(String compCd, String reservNo, String mobileId,
+      String mobileName, String token) async {
+    try {
+      final res = await http.post(
+          Uri(
+              scheme: 'http',
+              host: _hostAddress,
+              port: 9999,
+              path: '/callSpBarcodeSave'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+          body: jsonEncode(<String, String>{
+            "COMP_CD": compCd,
+            "RESERV_NO": reservNo,
+            "TOKEN": token,
+            "MOBILE_ID": mobileId,
+            "MOBILE_NAME": mobileName,
+          }));
+      if (res.statusCode == 200) {
+        final json = jsonDecode(utf8.decode(res.bodyBytes));
+        if (json['code'] == 200 && json['data']['CODE'] == 'S') {
+          return 'SUCCESS';
+        } else {
+          return json['data']['MSG'];
+        }
       } else if (res.statusCode == 400 ||
           res.statusCode == 401 ||
           res.statusCode == 402) {

@@ -7,6 +7,8 @@ extension MediaQueryValues on BuildContext {
   double get vPadding => pHeight * 0.015;
   double get contentsTextSize => pWidth * 0.035;
   double get contentsIconSize => pHeight * 0.03;
-  FontWeight get normalWeight => FontWeight.w300;
-  FontWeight get boldWeight => FontWeight.w500;
+  FontWeight get thinWeight => FontWeight.w300;
+  FontWeight get normalWeight => FontWeight.w500;
+  FontWeight get boldWeight => FontWeight.w700;
+  FontWeight get maxWeight => FontWeight.w900;
 }

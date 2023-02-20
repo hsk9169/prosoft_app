@@ -1,70 +1,142 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prosoft_proj/consts/colors.dart';
-import 'package:prosoft_proj/widgets/barcode_badge.dart';
+import 'package:prosoft_proj/consts/sizes.dart';
+import 'package:prosoft_proj/widgets/dark_button.dart';
 import 'package:prosoft_proj/widgets/barcode_tag.dart';
 
 class BarcodeBadge extends StatelessWidget {
-  final double width;
-  final String? level;
+  final String? carFullNo;
   final String? type;
   final String? url;
-  final VoidCallback onTap;
+  final VoidCallback onTapOrder;
+  final VoidCallback onTapStatus;
 
   const BarcodeBadge({
     Key? key,
-    required this.width,
-    this.level,
+    this.carFullNo,
     this.type,
     this.url,
-    required this.onTap,
+    required this.onTapOrder,
+    required this.onTapStatus,
   });
 
   @override
   Widget build(BuildContext context) {
-    final String _level = level ?? '';
-    return Padding(
-        padding: EdgeInsets.only(
-          top: width * 0.02,
-          bottom: width * 0.02,
+    return Container(
+        margin: EdgeInsets.only(
+            top: context.pHeight * 0.02,
+            left: context.pWidth * 0.04,
+            right: context.pWidth * 0.04),
+        padding: EdgeInsets.all(
+          context.pWidth * 0.04,
         ),
-        child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-                width: width,
-                padding: EdgeInsets.all(width * 0.05),
-                alignment: Alignment.centerRight,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border:
-                        Border.all(color: Colors.black, width: width * 0.002),
-                    borderRadius: BorderRadius.circular(width * 0.05)),
-                child: Column(children: [
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('품명: $_level',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: width * 0.08,
-                              fontWeight: FontWeight.bold))),
-                  Padding(
-                    padding: EdgeInsets.all(width * 0.05),
-                  ),
-                  type != null
-                      ? Text(type!,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: width * 0.15,
-                              fontWeight: FontWeight.bold))
-                      : Text('NONE',
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: width * 0.13,
-                              fontWeight: FontWeight.bold)),
-                  Padding(
-                    padding: EdgeInsets.all(width * 0.07),
-                  ),
-                  BarcodeTag(width: width, url: url ?? '')
-                ]))));
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(context.pWidth * 0.06),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.4),
+              spreadRadius: 4,
+              blurRadius: 6,
+              offset: const Offset(5, 8),
+            ),
+          ],
+        ),
+        child: Column(children: [
+          _renderCarFullNo(context),
+          Padding(
+            padding: EdgeInsets.all(context.pHeight * 0.01),
+          ),
+          _renderType(context),
+          Padding(
+            padding: EdgeInsets.all(context.pHeight * 0.01),
+          ),
+          _renderBarcode(context)
+        ]));
+  }
+
+  Widget _renderCarFullNo(BuildContext context) {
+    return Column(children: [
+      Row(children: [
+        SvgPicture.asset('assets/icons/truck.svg',
+            width: context.pWidth * 0.08, color: AppColors.darkGrey),
+        Padding(padding: EdgeInsets.all(context.pWidth * 0.01)),
+        Text('차량번호',
+            style: TextStyle(
+                fontSize: context.pWidth * 0.05,
+                fontFamily: 'SUIT',
+                fontWeight: context.normalWeight,
+                color: Colors.black))
+      ]),
+      Padding(
+        padding: EdgeInsets.all(context.pHeight * 0.01),
+      ),
+      Container(
+          width: context.pWidth,
+          alignment: Alignment.center,
+          child: Text(carFullNo!,
+              style: TextStyle(
+                  fontSize: context.pWidth * 0.1,
+                  fontFamily: 'SUIT',
+                  fontWeight: context.boldWeight,
+                  color: Colors.black)))
+    ]);
+  }
+
+  Widget _renderType(BuildContext context) {
+    return Column(children: [
+      Row(children: [
+        SvgPicture.asset('assets/icons/item.svg',
+            width: context.pWidth * 0.07, color: AppColors.darkGrey),
+        Padding(padding: EdgeInsets.all(context.pWidth * 0.01)),
+        Text('품명',
+            style: TextStyle(
+                fontSize: context.pWidth * 0.05,
+                fontFamily: 'SUIT',
+                fontWeight: context.normalWeight,
+                color: Colors.black))
+      ]),
+      Padding(
+        padding: EdgeInsets.all(context.pHeight * 0.01),
+      ),
+      Container(
+          width: context.pWidth,
+          alignment: Alignment.center,
+          child: Text(type!,
+              style: TextStyle(
+                  fontSize: context.pWidth * 0.16,
+                  fontFamily: 'SUIT',
+                  fontWeight: context.maxWeight,
+                  color: AppColors.lightOrange)))
+    ]);
+  }
+
+  Widget _renderBarcode(BuildContext context) {
+    return Column(children: [
+      Row(children: [
+        SvgPicture.asset('assets/icons/barcode.svg',
+            width: context.pWidth * 0.06, color: AppColors.darkGrey),
+        Padding(padding: EdgeInsets.all(context.pWidth * 0.01)),
+        Text('바코드',
+            style: TextStyle(
+                fontSize: context.pWidth * 0.05,
+                fontFamily: 'SUIT',
+                fontWeight: context.normalWeight,
+                color: Colors.black))
+      ]),
+      Padding(
+          padding: EdgeInsets.all(context.pWidth * 0.04),
+          child: BarcodeTag(url: url ?? '')),
+      Padding(padding: EdgeInsets.all(context.pHeight * 0.005)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          DarkButton(text: '진행화면', onTap: onTapOrder),
+          Padding(padding: EdgeInsets.all(context.pWidth * 0.01)),
+          DarkButton(text: '대기순서', onTap: onTapStatus),
+        ],
+      )
+    ]);
   }
 }

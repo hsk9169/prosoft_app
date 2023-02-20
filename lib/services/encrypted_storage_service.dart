@@ -13,6 +13,13 @@ import 'package:encrypt/encrypt.dart';
  * * * 'alarm_allowed': 'true' or 'false'
  */
 class EncryptedStorageService {
+  EncryptedStorageService._privateConstructor();
+  static final EncryptedStorageService _instance =
+      EncryptedStorageService._privateConstructor();
+  factory EncryptedStorageService() {
+    return _instance;
+  }
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final String _encKey = 'sUpErEnCkEy';
   final IV _iv = IV.fromLength(16);
