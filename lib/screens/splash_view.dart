@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prosoft_proj/services/api_service.dart';
 import 'package:prosoft_proj/services/encrypted_storage_service.dart';
@@ -12,6 +13,7 @@ import 'package:prosoft_proj/consts/colors.dart';
 import 'package:prosoft_proj/routes.dart';
 import 'package:prosoft_proj/screens/screens.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import '../firebase_options.dart';
 
 class SplashView extends StatefulWidget {
   @override
@@ -75,6 +77,17 @@ class _SplashView extends State<SplashView> {
   Future<bool> _tryAutoLogin() async {
     _platformProvider.platformType =
         Theme.of(context).platform == TargetPlatform.iOS ? 'IOS' : 'ANDROID';
+
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     await FirebaseMessaging.instance.getToken().then((value) {
       _platformProvider.fcmToken = value;
       print(value.toString());

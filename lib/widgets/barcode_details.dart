@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:prosoft_proj/consts/colors.dart';
+import 'package:prosoft_proj/widgets/dark_button.dart';
 import 'package:prosoft_proj/consts/sizes.dart';
-import 'package:prosoft_proj/widgets/barcode_badge.dart';
-import 'package:prosoft_proj/widgets/barcode_tag.dart';
-import 'package:prosoft_proj/utils/number_handler.dart';
 
 class BarcodeDetails extends StatelessWidget {
+  VoidCallback? onTapIssue;
   final String? carFullNo;
   final String? type;
   final String? custName;
   final String? inStoreTime;
 
-  const BarcodeDetails({
+  BarcodeDetails({
     Key? key,
+    this.onTapIssue,
     this.carFullNo,
     this.type,
     this.custName,
@@ -42,20 +40,23 @@ class BarcodeDetails extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(children: [
-          _renderCarFullNo(context),
-          Padding(
-            padding: EdgeInsets.all(context.pHeight * 0.01),
-          ),
-          _renderType(context),
-          Padding(
-            padding: EdgeInsets.all(context.pHeight * 0.01),
-          ),
-          _renderCustName(context),
-          Padding(
-            padding: EdgeInsets.all(context.pHeight * 0.01),
-          ),
-          _renderGateInTime(context),
+        child: Stack(children: [
+          Column(children: [
+            _renderCarFullNo(context),
+            Padding(
+              padding: EdgeInsets.all(context.pHeight * 0.01),
+            ),
+            _renderType(context),
+            Padding(
+              padding: EdgeInsets.all(context.pHeight * 0.01),
+            ),
+            _renderCustName(context),
+            Padding(
+              padding: EdgeInsets.all(context.pHeight * 0.01),
+            ),
+            _renderGateInTime(context),
+          ]),
+          DarkButton(text: '바코드 발행', onTap: () => onTapIssue)
         ]));
   }
 

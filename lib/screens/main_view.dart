@@ -176,9 +176,6 @@ class _MainView extends State<MainView> {
                         ),
                         HorizontalDivier(),
                         InfoCard(number: snapshot.data!.length),
-                        InkWell(
-                            onTap: () => _onTapWaitingOrder(MainContent()),
-                            child: Text('test'))
                       ])),
                   Expanded(
                       child: SingleChildScrollView(
@@ -200,11 +197,12 @@ class _MainView extends State<MainView> {
     return List.generate(
         list.length,
         (index) => BarcodeBadge(
+            isEnd: list[index].barcodeEndYn == 'Y' ? true : false,
             onTapOrder: () => _onTapWaitingOrder(list[index]),
             onTapStatus: () => _onTapWaitingStatus(list[index]),
             carFullNo: list[index].carFullNo,
             type: list[index].matlName,
-            url: list[index].barcodeId.toString()));
+            url: list[index].rfidNumber.toString()));
   }
 
   Widget _renderMatlName(List<WaitingStatus> list) {

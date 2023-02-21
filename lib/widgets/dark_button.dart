@@ -18,10 +18,10 @@ class DarkButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
             padding: EdgeInsets.only(
-              top: context.pWidth * 0.01,
-              bottom: context.pWidth * 0.01,
-              left: context.pWidth * 0.02,
-              right: context.pWidth * 0.02,
+              top: context.pWidth * 0.016,
+              bottom: context.pWidth * 0.016,
+              left: context.pWidth * 0.032,
+              right: context.pWidth * 0.032,
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(context.pWidth * 0.01),
@@ -29,7 +29,7 @@ class DarkButton extends StatelessWidget {
             ),
             child: Text(text,
                 style: TextStyle(
-                    fontSize: context.pWidth * 0.03,
+                    fontSize: context.pWidth * 0.035,
                     fontFamily: 'SUIT',
                     fontWeight: context.boldWeight,
                     color: Colors.white))));

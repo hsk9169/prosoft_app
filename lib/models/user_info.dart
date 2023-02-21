@@ -14,10 +14,10 @@ class UserInfo {
   factory UserInfo.fromJson(Map<String, dynamic> json) {
     final data = json['data']['userInfo'];
     return UserInfo(
-      name: data['MOBILE_NAME'] ?? '',
-      password: data['MOBILE_PWD'] ?? '',
-      phoneNumber: data['MOBILE_ID'] ?? '',
-      fcmToken: data['TOKEN'] ?? '',
+      name: data['MOBILE_NAME'],
+      password: data['MOBILE_PWD'],
+      phoneNumber: data['MOBILE_ID'],
+      fcmToken: data['TOKEN'],
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:prosoft_proj/widgets/barcode_tag.dart';
 class BarcodeBadge extends StatelessWidget {
   final String? carFullNo;
   final String? type;
+  final bool? isEnd;
   final String? url;
   final VoidCallback onTapOrder;
   final VoidCallback onTapStatus;
@@ -16,6 +17,7 @@ class BarcodeBadge extends StatelessWidget {
     Key? key,
     this.carFullNo,
     this.type,
+    this.isEnd,
     this.url,
     required this.onTapOrder,
     required this.onTapStatus,
@@ -46,11 +48,11 @@ class BarcodeBadge extends StatelessWidget {
         child: Column(children: [
           _renderCarFullNo(context),
           Padding(
-            padding: EdgeInsets.all(context.pHeight * 0.01),
+            padding: EdgeInsets.all(context.pHeight * 0.006),
           ),
           _renderType(context),
           Padding(
-            padding: EdgeInsets.all(context.pHeight * 0.01),
+            padding: EdgeInsets.all(context.pHeight * 0.006),
           ),
           _renderBarcode(context)
         ]));
@@ -105,10 +107,10 @@ class BarcodeBadge extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(type!,
               style: TextStyle(
-                  fontSize: context.pWidth * 0.16,
+                  fontSize: context.pWidth * 0.14,
                   fontFamily: 'SUIT',
                   fontWeight: context.maxWeight,
-                  color: AppColors.lightOrange)))
+                  color: isEnd! ? Colors.black : AppColors.lightOrange)))
     ]);
   }
 

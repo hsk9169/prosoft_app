@@ -88,7 +88,7 @@ class _ContentDetailsView extends State<ContentDetailsView> {
                         Padding(
                           padding: EdgeInsets.all(context.pHeight * 0.01),
                         ),
-                        _renderBarcode(snapshot.data![0].barcodeId!),
+                        _renderBarcode(snapshot.data![0].rfidNo!),
                         Padding(
                             padding: EdgeInsets.only(
                               top: context.pWidth * 0.06,

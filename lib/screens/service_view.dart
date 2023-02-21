@@ -46,7 +46,7 @@ class _ServiceView extends State<ServiceView> {
     _initMessaging();
     super.initState();
     _initData();
-    _checkMsg();
+    //_checkLatestMsg();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
   }
 
@@ -57,7 +57,7 @@ class _ServiceView extends State<ServiceView> {
         .then((value) => session.contentList = value);
   }
 
-  void _checkMsg() async {
+  void _checkLatestMsg() async {
     final phoneNumber =
         Provider.of<Platform>(context, listen: false).phoneNumber;
     await ApiService().getLatestMsg(phoneNumber).then((data) {
@@ -86,12 +86,6 @@ class _ServiceView extends State<ServiceView> {
         return BarcodeIssueView();
       case 2:
         return WaitingOrderView();
-      case 3:
-        return WaitingStatusView();
-      //case 4:
-      //  return ContentDetailsView();
-      //case 5:
-      //  return MeasrImageView();
       default:
         break;
     }
@@ -111,8 +105,6 @@ class _ServiceView extends State<ServiceView> {
         Provider.of<Platform>(context, listen: true).isErrorMessagePoppedUp;
     int screenNumber =
         Provider.of<Platform>(context, listen: true).screenNumber;
-
-    _showErrorDialog(isErrorMessagePoppedUp);
 
     final String userName =
         Provider.of<Session>(context, listen: false).userInfo.name!;
@@ -233,7 +225,7 @@ class _ServiceView extends State<ServiceView> {
       requestSoundPermission: true,
     );
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_notification');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
@@ -250,9 +242,9 @@ class _ServiceView extends State<ServiceView> {
           sound: true,
         );
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) =>
-            selectNotification(payload!));
+    //await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    //    onSelectNotification: (String? payload) =>
+    //        selectNotification(payload));
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -260,16 +252,15 @@ class _ServiceView extends State<ServiceView> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
-      if (notification != null) {
-        //Provider.of<Platform>(context, listen: false).popupErrorMessage = '0';
-        setState(() => isMessage = !isMessage);
+      if (android != null) {
+        print(message.notification!);
         showLocalNotification(message, true);
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print(message.data);
-      selectNotification(message.data['PGM_ID']);
+      selectNotification(message.data);
     });
   }
 
@@ -278,8 +269,8 @@ class _ServiceView extends State<ServiceView> {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 
-    if (notification != null) {
-      setState(() => isMessage = !isMessage);
+    if (android != null) {
+      print(message.data);
       showLocalNotification(message, false);
     }
   }
@@ -288,10 +279,11 @@ class _ServiceView extends State<ServiceView> {
       RemoteMessage message, bool isForeground) async {
     var platform = Theme.of(context).platform;
 
-    final String appPgmId = message.data['PGM_ID'];
-
-    _flutterLocalNotificationsPlugin.show(0, message.notification!.title,
-        message.notification!.body, notificationDetails);
+    _flutterLocalNotificationsPlugin.show(
+        0,
+        'local ${message.notification!.title}',
+        message.notification!.body,
+        notificationDetails);
 
     /*
     switch (alarm_type) {
@@ -351,22 +343,12 @@ class _ServiceView extends State<ServiceView> {
     */
   }
 
-  Future<void> selectNotification(String pgmId) async {
-    Provider.of<Platform>(context, listen: false).screenNumber =
-        ScreenCode.dict.containsKey(pgmId) ? ScreenCode.dict[pgmId]! : 0;
-  }
-
-  void _showErrorDialog(bool isError) {
-    Future.delayed(Duration.zero, () {
-      if (isError) {
-        //ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //    content: Text(Provider.of<Platform>(context, listen: false)
-        //        .popupErrorMessage),
-        //    backgroundColor: Colors.black87.withOpacity(0.6),
-        //    duration: const Duration(seconds: 3)));
-        //Provider.of<Platform>(context, listen: false).isErrorMessagePopup =
-        //    false;
-      }
-    });
+  Future<void> selectNotification(Map<String, dynamic> data) async {
+    await ApiService().checkMsgRead(
+        Provider.of<Platform>(context, listen: false).phoneNumber,
+        data['MSG_DATE'],
+        data['MSG_SEQ']);
+    //Provider.of<Platform>(context, listen: false).screenNumber =
+    //    ScreenCode.dict.containsKey(data['PGM_ID']) ? ScreenCode.dict['PGM_ID']! : 0;
   }
 }

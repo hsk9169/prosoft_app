@@ -86,7 +86,6 @@ class _SigninView extends State<SigninView> {
     showDialog(
         context: context,
         barrierColor: AppColors.darkGrey.withOpacity(0.3),
-        barrierDismissible: true,
         builder: (BuildContext context) {
           return ElevatedPopup(
               height: context.pHeight * 0.55,
@@ -133,6 +132,7 @@ class _SigninView extends State<SigninView> {
                             TextField(
                               onChanged: (value) =>
                                   setState(() => _idSearchId = value),
+                              keyboardType: TextInputType.number,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'SUIT',
@@ -256,14 +256,17 @@ class _SigninView extends State<SigninView> {
                                 TextField(
                                   onChanged: (value) =>
                                       setState(() => _pwdChangePwd = value),
+                                  maxLength: 4,
                                   obscureText: true,
                                   obscuringCharacter: '*',
+                                  keyboardType: TextInputType.number,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'SUIT',
                                       fontSize: context.pWidth * 0.055,
                                       fontWeight: FontWeight.w700),
                                   decoration: InputDecoration(
+                                    counterText: '',
                                     hintText: '숫자 4자리',
                                     hintStyle: TextStyle(
                                         color: AppColors.lightGrey,
@@ -292,14 +295,17 @@ class _SigninView extends State<SigninView> {
                                 TextField(
                                   onChanged: (value) => setState(
                                       () => _pwdCheckChangePwd = value),
+                                  maxLength: 4,
                                   obscureText: true,
                                   obscuringCharacter: '*',
+                                  keyboardType: TextInputType.number,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'SUIT',
                                       fontSize: context.pWidth * 0.055,
                                       fontWeight: FontWeight.w700),
                                   decoration: InputDecoration(
+                                    counterText: '',
                                     hintText: '숫자 4자리',
                                     hintStyle: TextStyle(
                                         color: AppColors.lightGrey,
@@ -482,9 +488,12 @@ class _SigninView extends State<SigninView> {
                             TextField(
                               onChanged: (value) =>
                                   setState(() => _pwdAddAccount = value),
+                              maxLength: 4,
                               obscureText: true,
                               obscuringCharacter: '*',
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
+                                counterText: '',
                                 hintText: '숫자 4자리',
                                 hintStyle: TextStyle(
                                     color: AppColors.lightGrey,
@@ -662,8 +671,8 @@ class _SigninView extends State<SigninView> {
                     flex: 1,
                     child: Container(
                         padding: EdgeInsets.only(
-                          top: context.pWidth * 0.03,
-                          bottom: context.pWidth * 0.03,
+                          top: context.pWidth * 0.032,
+                          bottom: context.pWidth * 0.032,
                           left: context.pWidth * 0.04,
                           right: context.pWidth * 0.04,
                         ),
@@ -673,27 +682,25 @@ class _SigninView extends State<SigninView> {
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'SUIT',
-                                fontSize: context.pWidth * 0.06,
+                                fontSize: context.pWidth * 0.055,
                                 fontWeight: context.maxWeight)))),
                 Expanded(
                     flex: 3,
                     child: Container(
                         padding: EdgeInsets.only(
-                          top: context.pWidth * 0.003,
-                          bottom: context.pWidth * 0.003,
                           left: context.pWidth * 0.04,
                           right: context.pWidth * 0.04,
                         ),
                         color: const Color.fromARGB(255, 237, 243, 247),
                         child: TextField(
+                          maxLength: 13,
                           controller: _idController,
-                          onChanged: (value) => setState(() => _id = value),
                           obscureText: false,
                           textAlignVertical: TextAlignVertical.center,
                           autofocus: false,
                           cursorColor: Colors.black,
-                          decoration:
-                              const InputDecoration(border: InputBorder.none),
+                          decoration: const InputDecoration(
+                              border: InputBorder.none, counterText: ''),
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: context.pWidth * 0.06,
@@ -709,8 +716,8 @@ class _SigninView extends State<SigninView> {
                     flex: 1,
                     child: Container(
                         padding: EdgeInsets.only(
-                          top: context.pWidth * 0.03,
-                          bottom: context.pWidth * 0.03,
+                          top: context.pWidth * 0.032,
+                          bottom: context.pWidth * 0.032,
                           left: context.pWidth * 0.04,
                           right: context.pWidth * 0.04,
                         ),
@@ -720,33 +727,32 @@ class _SigninView extends State<SigninView> {
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'SUIT',
-                                fontSize: context.pWidth * 0.06,
+                                fontSize: context.pWidth * 0.055,
                                 fontWeight: context.maxWeight)))),
                 Expanded(
                     flex: 3,
                     child: Container(
                         padding: EdgeInsets.only(
-                          top: context.pWidth * 0.003,
-                          bottom: context.pWidth * 0.003,
                           left: context.pWidth * 0.04,
                           right: context.pWidth * 0.04,
                         ),
                         color: const Color.fromARGB(255, 237, 243, 247),
                         child: TextField(
-                          controller: _pwdController,
-                          onChanged: (value) => setState(() => _pwd = value),
+                          onChanged: (value) =>
+                              setState(() => _pwdAddAccount = value),
+                          maxLength: 4,
                           obscureText: true,
                           obscuringCharacter: '*',
                           textAlignVertical: TextAlignVertical.center,
                           autofocus: false,
                           cursorColor: Colors.black,
-                          decoration:
-                              const InputDecoration(border: InputBorder.none),
+                          decoration: const InputDecoration(
+                              border: InputBorder.none, counterText: ''),
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: context.pWidth * 0.06,
                               fontWeight: context.thinWeight),
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                         )))
               ])
             ]));

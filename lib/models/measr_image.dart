@@ -16,11 +16,11 @@ class MeasrImage {
   factory MeasrImage.fromJson(Map<String, dynamic> data) {
     final json = data['data']['list'][0];
     return MeasrImage(
-      measrFullNo: json['MEASR_FULL_NO'] ?? '',
-      image: json['IMAGE'] ?? '',
-      barcodeId: json['BARCODE_ID'] ?? '',
-      rfidNo: json['RFID_NO'] ?? '',
-      measrInNo: json['MEASR_IN_NO'] ?? '',
+      measrFullNo: json['MEASR_FULL_NO'],
+      image: json['IMAGE'],
+      barcodeId: json['BARCODE_ID'],
+      rfidNo: json['RFID_NO'],
+      measrInNo: json['MEASR_IN_NO'],
     );
   }
 

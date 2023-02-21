@@ -17,12 +17,12 @@ class WaitingStatus {
 
   factory WaitingStatus.fromJson(Map<String, dynamic> json) {
     return WaitingStatus(
-      measrGbnCode: json['MEASR_GBN_CODE'] ?? 'NULL',
-      scrapYardCode: json['SCRAP_YARD_CODE'] ?? 'NULL',
-      waitingSeq: json['WAITING_SEQ'] ?? 'NULL',
-      carFullNo: json['CAR_FULL_NO'] ?? 'NULL',
-      visitName: json['VISIT_NAME'] ?? 'NULL',
-      measrStatus: json['MEASR_STATUS'] ?? 'NULL',
+      measrGbnCode: json['MEASR_GBN_CODE'],
+      scrapYardCode: json['SCRAP_YARD_CODE'],
+      waitingSeq: json['WAITING_SEQ'],
+      carFullNo: json['CAR_FULL_NO'],
+      visitName: json['VISIT_NAME'],
+      measrStatus: json['MEASR_STATUS'],
     );
   }
 

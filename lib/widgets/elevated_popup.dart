@@ -12,28 +12,32 @@ class ElevatedPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: EdgeInsets.all(context.pWidth * 0.05),
+      insetPadding: EdgeInsets.only(
+        left: context.pWidth * 0.05,
+        right: context.pWidth * 0.05,
+      ),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(context.pWidth * 0.06)),
       elevation: 20,
-      child: Container(
-          width: context.pWidth,
-          height: height,
-          padding: EdgeInsets.only(
-            top: context.pHeight * 0.035,
-            bottom: context.pHeight * 0.03,
-            left: context.pWidth * 0.05,
-            right: context.pWidth * 0.05,
-          ),
-          child: Stack(children: [
-            children,
-            Align(
-                alignment: Alignment.topRight,
-                child: InkWell(
-                    onTap: onTapClose,
-                    child: Icon(Icons.close,
-                        color: Colors.black, size: context.pWidth * 0.06)))
-          ])),
+      child: SingleChildScrollView(
+          child: Container(
+              width: context.pWidth,
+              height: height,
+              padding: EdgeInsets.only(
+                top: context.pHeight * 0.035,
+                bottom: context.pHeight * 0.03,
+                left: context.pWidth * 0.05,
+                right: context.pWidth * 0.05,
+              ),
+              child: Stack(children: [
+                children,
+                Align(
+                    alignment: Alignment.topRight,
+                    child: InkWell(
+                        onTap: onTapClose,
+                        child: Icon(Icons.close,
+                            color: Colors.black, size: context.pWidth * 0.06)))
+              ]))),
     );
   }
 }

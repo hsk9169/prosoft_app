@@ -75,9 +75,9 @@ class _WaitingOrderView extends State<WaitingOrderView> {
     final barcodeData =
         Provider.of<Platform>(context, listen: false).selectedBarcode;
     return await _apiService
-        //.getWaitingOrder(_userInfo.phoneNumber!, barcodeData.barcodeId!,
-        //    barcodeData.rfidNumber!)
-        .getWaitingOrder(_userInfo.phoneNumber!, '2302140001', '21076979')
+        .getWaitingOrder(_userInfo.phoneNumber!, barcodeData.barcodeId!,
+            barcodeData.rfidNumber!)
+        //.getWaitingOrder(_userInfo.phoneNumber!, '2302140001', '21076979')
         .whenComplete(() =>
             Provider.of<Platform>(context, listen: false).isLoading = false);
   }
@@ -86,9 +86,9 @@ class _WaitingOrderView extends State<WaitingOrderView> {
     final barcodeData =
         Provider.of<Platform>(context, listen: false).selectedBarcode;
     await _apiService
-        //.getMainDetails(_userInfo.phoneNumber!, barcodeData.barcodeId!,
-        //    barcodeData.rfidNumber!)
-        .getMainDetails(_userInfo.phoneNumber!, '2302140001', '21076979')
+        .getMainDetails(_userInfo.phoneNumber!, barcodeData.barcodeId!,
+            barcodeData.rfidNumber!)
+        //.getMainDetails(_userInfo.phoneNumber!, '2302140001', '21076979')
         .then((value) {
       showDialog(
           context: context,

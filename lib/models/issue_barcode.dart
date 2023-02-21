@@ -25,16 +25,16 @@ class IssueBarcode {
 
   factory IssueBarcode.fromJson(Map<String, dynamic> json) {
     return IssueBarcode(
-      compCd: json['COMP_CD'] ?? 'NULL',
-      reservNo: json['RESERV_NO'] ?? 'NULL',
-      custName: json['CUST_NAME'] ?? 'NULL',
-      matlName: json['MATL_NAME'] ?? 'NULL',
-      barcodeId: json['BARCODE_ID'] ?? 'NULL',
-      rfidNo: json['RFID_NO'] ?? 'NULL',
-      carFullNo: json['CAR_FULL_NO'] ?? 'NULL',
-      driverName: json['DRIVER_NAME'] ?? 'NULL',
-      driverPhoneNo: json['DRIVER_PHONE_NO'] ?? 'NULL',
-      inStoreTime: json['IN_STORE_TIME'] ?? 'NULL',
+      compCd: json['COMP_CD'],
+      reservNo: json['RESERV_NO'],
+      custName: json['CUST_NAME'],
+      matlName: json['MATL_NAME'],
+      barcodeId: json['BARCODE_ID'],
+      rfidNo: json['RFID_NO'],
+      carFullNo: json['CAR_FULL_NO'],
+      driverName: json['DRIVER_NAME'],
+      driverPhoneNo: json['DRIVER_PHONE_NO'],
+      inStoreTime: json['IN_STORE_TIME'],
     );
   }
 

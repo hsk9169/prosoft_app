@@ -37,22 +37,22 @@ class FcmMessage {
 
   factory FcmMessage.fromJson(Map<String, dynamic> json) {
     return FcmMessage(
-      msgBody: json['MSG_BODY'] ?? '',
-      measrFullNo: json['MEASR_FULL_NO'] ?? '',
-      appPgmId: json['APP_PGM_ID'] ?? '',
+      msgBody: json['MSG_BODY'],
+      measrFullNo: json['MEASR_FULL_NO'],
+      appPgmId: json['APP_PGM_ID'],
       barcodeId: json['BARCODE_ID'] ?? 0,
-      rfidNo: json['RFID_NO'] ?? '',
-      waitingNo: json['WAITING_NO'] ?? '',
-      carFullNo: json['CAR_FULL_NO'] ?? '',
-      transId: json['TRANS_ID'] ?? '',
-      msgDate: json['MSG_DATE'] ?? '',
-      gateIoNo: json['GATE_IO_NO'] ?? '',
-      msgTitle: json['MSG_TITLE'] ?? '',
-      transDate: json['TRANS_DATE'] ?? '',
-      msgSeq: json['MSG_SEQ'] ?? '',
-      mobileId: json['MOBILE_ID'] ?? '',
-      reservNo: json['RESERV_NO'] ?? '',
-      measrInNo: json['MEASR_IN_NO'] ?? '',
+      rfidNo: json['RFID_NO'],
+      waitingNo: json['WAITING_NO'],
+      carFullNo: json['CAR_FULL_NO'],
+      transId: json['TRANS_ID'],
+      msgDate: json['MSG_DATE'],
+      gateIoNo: json['GATE_IO_NO'],
+      msgTitle: json['MSG_TITLE'],
+      transDate: json['TRANS_DATE'],
+      msgSeq: json['MSG_SEQ'],
+      mobileId: json['MOBILE_ID'],
+      reservNo: json['RESERV_NO'],
+      measrInNo: json['MEASR_IN_NO'],
     );
   }
 

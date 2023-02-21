@@ -54,7 +54,7 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
         .then((res) {
       if (res is String) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text('서버 오류 발생'),
+            content: const Text('바코드 생성 중에 오류가 발생했습니다.'),
             backgroundColor: Colors.black87.withOpacity(0.6),
             duration: const Duration(seconds: 2)));
         return [IssueBarcode()];
@@ -65,6 +65,7 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
   }
 
   void _onTapCalendar() async {
+    final now = DateTime.now();
     await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -80,7 +81,8 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
                     borderRadius: BorderRadius.circular(15)),
                 child: SfDateRangePicker(
                   initialSelectedDate: _selectedDatetime,
-                  maxDate: DateTime.now(),
+                  minDate: now,
+                  maxDate: DateTime(now.year + 100),
                   view: DateRangePickerView.month,
                   headerHeight: context.pHeight * 0.1,
                   headerStyle: DateRangePickerHeaderStyle(
@@ -114,14 +116,54 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
         });
   }
 
-  void _onTapIssueBarcode(IssueBarcode data) async {
+  void _onTapBarcodeIssue(IssueBarcode data) async {
     final userInfo = Provider.of<Session>(context, listen: false).userInfo;
     Provider.of<Platform>(context, listen: false).isLoading = true;
     await _apiService
         .issueBarcode(data.compCd!, data.reservNo!, userInfo.phoneNumber!,
             userInfo.name!, userInfo.fcmToken!)
         .then((value) {
-      if (value != 'SUCCESS') {
+      if (value == 'SUCCESS') {
+        showDialog(
+            context: context,
+            barrierColor: AppColors.darkGrey.withOpacity(0.3),
+            barrierDismissible: true,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('바코드 발행',
+                    style: TextStyle(
+                        fontSize: context.pWidth * 0.05,
+                        fontFamily: 'SUIT',
+                        fontWeight: context.normalWeight,
+                        color: Colors.black)),
+                content: Text('모바일 바코드를 발행하시겠습니까?',
+                    style: TextStyle(
+                        fontSize: context.pWidth * 0.05,
+                        fontFamily: 'SUIT',
+                        fontWeight: context.normalWeight,
+                        color: Colors.black)),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('확인'),
+                    onPressed: () async {
+                      Provider.of<Platform>(context, listen: false);
+                      _barcodeIssueFuture =
+                          _getBarcodeIssueList().whenComplete(() {
+                        Navigator.of(context).pop();
+                        Provider.of<Platform>(context, listen: false);
+                      });
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('취소'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(value),
             backgroundColor: Colors.black87.withOpacity(0.6),
@@ -210,7 +252,7 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
           NumberHandler()
               .getDateFromDatetime(_selectedDatetime.toLocal().toString()),
           style: TextStyle(
-              fontSize: context.pWidth * 0.09,
+              fontSize: context.pWidth * 0.06,
               fontFamily: 'SUIT',
               fontWeight: context.boldWeight,
               color: Colors.black)),
@@ -220,7 +262,7 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
       InkWell(
           onTap: () => _onTapCalendar(),
           child: Icon(Icons.calendar_month,
-              color: AppColors.darkGrey, size: context.pWidth * 0.07))
+              color: AppColors.darkGrey, size: context.pWidth * 0.08))
     ]);
   }
 
@@ -245,22 +287,19 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
             ),
           ],
         ),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('금일 ${data.length.toString()} 건의 바코드 정보가 있습니다.',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'SUIT',
-                  fontSize: context.pWidth * 0.04,
-                  fontWeight: context.normalWeight)),
-          DarkButton(text: '바코드 발행', onTap: () => _onTapIssueBarcode(data[0]))
-        ]));
+        child: Text('${data.length.toString()} 건의 입고예정 정보가 있습니다.',
+            style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'SUIT',
+                fontSize: context.pWidth * 0.04,
+                fontWeight: context.normalWeight)));
   }
 
   List<Widget> _renderBarcodeDetails(List<IssueBarcode> list) {
     return List.generate(
         list.length,
         (index) => BarcodeDetails(
+              onTapIssue: () => _onTapBarcodeIssue(list[index]),
               type: list[index].matlName,
               carFullNo: list[index].carFullNo,
               custName: list[index].custName,
