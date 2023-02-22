@@ -50,7 +50,8 @@ class _SigninView extends State<SigninView> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
   }
 
-  void _initData() {
+  void _initData() async {
+    await EncryptedStorageService().initStorage();
     _idController.text = _id;
     _pwdController.text = _pwd;
     setState(() {

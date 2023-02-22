@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prosoft_proj/consts/colors.dart';
 import 'package:prosoft_proj/routes.dart';
 import 'package:prosoft_proj/screens/screens.dart';
+import 'package:prosoft_proj/services/encrypted_storage_service.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
