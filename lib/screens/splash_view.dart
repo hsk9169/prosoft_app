@@ -23,7 +23,6 @@ class SplashView extends StatefulWidget {
 class _SplashView extends State<SplashView> {
   // Service, Util classes
   final _apiService = ApiService();
-  final _encryptedStorageService = EncryptedStorageService();
 
   // Providers
   late dynamic _sessionProvider;
@@ -42,30 +41,31 @@ class _SplashView extends State<SplashView> {
   void _initData() async {
     await _initializeDeviceStorage();
     await Future.delayed(const Duration(seconds: 2), () async {
-      if (await _tryAutoLogin()) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => ServiceView()),
-          (Route<dynamic> route) => false,
-        );
-      } else {
-        Navigator.pushNamedAndRemoveUntil(
-            context, Routes.SIGNIN, (Route<dynamic> route) => false,
-            arguments: 0);
-      }
+      await _tryAutoLogin().then((value) {
+        if (value) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => ServiceView()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, Routes.SIGNIN, (Route<dynamic> route) => false,
+              arguments: 0);
+        }
+      });
     });
   }
 
   Future<void> _initializeDeviceStorage() async {
-    await _encryptedStorageService.initStorage();
-    //await _encryptedStorageService.deleteAllData();
+    await EncryptedStorageService().initStorage();
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool('first_run') ?? true) {
-      await _encryptedStorageService.deleteAllData();
+      await EncryptedStorageService().deleteAllData();
       prefs.setBool('first_run', false);
     }
 
-    await _encryptedStorageService.readData('auto_login').then((value) {
+    await EncryptedStorageService().readData('auto_login').then((value) {
       if (value == 'true') {
         _platformProvider.isAutoLoginChecked = true;
       } else {
@@ -90,13 +90,12 @@ class _SplashView extends State<SplashView> {
 
     await FirebaseMessaging.instance.getToken().then((value) {
       _platformProvider.fcmToken = value;
-      print(value.toString());
     });
     if (_platformProvider.isAutoLoginChecked) {
       _platformProvider.phoneNumber =
-          await _encryptedStorageService.readData('phone_number');
+          await EncryptedStorageService().readData('phone_number');
       _platformProvider.password =
-          await _encryptedStorageService.readData('password');
+          await EncryptedStorageService().readData('password');
       final res = await _apiService.login(
           _platformProvider.phoneNumber,
           _platformProvider.password,

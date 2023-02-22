@@ -520,19 +520,26 @@ class _SigninView extends State<SigninView> {
   }
 
   void _onTapAddAccount() async {
+    final platformProvider = Provider.of<Platform>(context, listen: false);
+    platformProvider.platformType =
+        Theme.of(context).platform == TargetPlatform.iOS ? 'IOS' : 'ANDROID';
+    await FirebaseMessaging.instance.getToken().then((value) {
+      platformProvider.fcmToken = value!;
+    });
     setState(() => _isLoading = true);
     await _apiService
-        .updateUserInfo(_idAddAccount, _pwdAddAccount, _nameAddAccount)
-        .then((res) {
+        .updateUserInfo(_idAddAccount, _pwdAddAccount, _nameAddAccount,
+            platformProvider.fcmToken, platformProvider.platformType)
+        .then((value) async {
       setState(() => _isLoading = false);
-      if (res == 'SUCCESS') {
+      if (value == 'SUCCESS') {
         setState(() {
           _idAddAccount = '';
           _nameAddAccount = '';
           _pwdAddAccount = '';
         });
         Navigator.pop(context);
-      } else if (res == 'FAILED') {
+      } else if (value == 'FAILED') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('계정 생성 실패'),
             backgroundColor: Colors.black87.withOpacity(0.6),
@@ -553,7 +560,6 @@ class _SigninView extends State<SigninView> {
         Theme.of(context).platform == TargetPlatform.iOS ? 'IOS' : 'ANDROID';
     await FirebaseMessaging.instance.getToken().then((value) {
       platformProvider.fcmToken = value!;
-      print(value.toString());
     });
     setState(() => _isLoading = true);
     await _apiService

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:prosoft_proj/models/measr_image.dart';
 import 'package:prosoft_proj/models/models.dart';
 
 class ApiService {
@@ -42,8 +41,8 @@ class ApiService {
     }
   }
 
-  Future<dynamic> updateUserInfo(
-      String phoneNumber, String password, String name) async {
+  Future<dynamic> updateUserInfo(String phoneNumber, String password,
+      String name, String fcmToken, String platform) async {
     try {
       final res = await http.post(
           Uri(
@@ -58,6 +57,8 @@ class ApiService {
             'MOBILE_ID': phoneNumber,
             'MOBILE_PWD': password,
             'MOBILE_NAME': name,
+            "TOKEN": fcmToken,
+            "DEVICE_OS": platform,
           }));
       if (res.statusCode == 200) {
         final json = jsonDecode(utf8.decode(res.bodyBytes));

@@ -59,7 +59,7 @@ class ContentDetails {
       rfidNo: json['RFID_NO'],
       gateOutTime: json['GATE_OUT_TIME'],
       carFullNo: json['CAR_FULL_NO'],
-      driverName: json['DRIVER_NAME'],
+      driverName: json['DRIVER_NANE'],
       inspResult: json['INSP_RESULT'],
       driverPhoneNo: json['DRIVER_PHONE_NO'],
       measrOutTime: json['MEASR_OUT_TIME'],
