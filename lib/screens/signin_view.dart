@@ -42,8 +42,8 @@ class _SigninView extends State<SigninView> {
   @override
   void initState() {
     super.initState();
-    _idController = TextEditingController();
-    _pwdController = TextEditingController();
+    _idController = TextEditingController(text: _id);
+    _pwdController = TextEditingController(text: _pwd);
     _idController.addListener(_onIdChanged);
     _pwdController.addListener(_onPwdChanged);
     _initData();
@@ -67,6 +67,7 @@ class _SigninView extends State<SigninView> {
 
   void _onPwdChanged() {
     setState(() => _pwd = _pwdController.text);
+    print(_pwd);
   }
 
   void _onTapClosePopup() {
@@ -521,7 +522,7 @@ class _SigninView extends State<SigninView> {
   void _onTapAddAccount() async {
     setState(() => _isLoading = true);
     await _apiService
-        .updateUserInfo(_idAddAccount, _nameAddAccount, _pwdAddAccount)
+        .updateUserInfo(_idAddAccount, _pwdAddAccount, _nameAddAccount)
         .then((res) {
       setState(() => _isLoading = false);
       if (res == 'SUCCESS') {
@@ -738,8 +739,7 @@ class _SigninView extends State<SigninView> {
                         ),
                         color: const Color.fromARGB(255, 237, 243, 247),
                         child: TextField(
-                          onChanged: (value) =>
-                              setState(() => _pwdAddAccount = value),
+                          controller: _pwdController,
                           maxLength: 4,
                           obscureText: true,
                           obscuringCharacter: '*',

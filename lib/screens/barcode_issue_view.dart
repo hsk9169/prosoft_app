@@ -118,59 +118,61 @@ class _BarcodeIssueView extends State<BarcodeIssueView> {
 
   void _onTapBarcodeIssue(IssueBarcode data) async {
     final userInfo = Provider.of<Session>(context, listen: false).userInfo;
-    Provider.of<Platform>(context, listen: false).isLoading = true;
-    await _apiService
-        .issueBarcode(data.compCd!, data.reservNo!, userInfo.phoneNumber!,
-            userInfo.name!, userInfo.fcmToken!)
-        .then((value) {
-      if (value == 'SUCCESS') {
-        showDialog(
-            context: context,
-            barrierColor: AppColors.darkGrey.withOpacity(0.3),
-            barrierDismissible: true,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('바코드 발행',
-                    style: TextStyle(
-                        fontSize: context.pWidth * 0.05,
-                        fontFamily: 'SUIT',
-                        fontWeight: context.normalWeight,
-                        color: Colors.black)),
-                content: Text('모바일 바코드를 발행하시겠습니까?',
-                    style: TextStyle(
-                        fontSize: context.pWidth * 0.05,
-                        fontFamily: 'SUIT',
-                        fontWeight: context.normalWeight,
-                        color: Colors.black)),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('확인'),
-                    onPressed: () async {
-                      Provider.of<Platform>(context, listen: false);
-                      _barcodeIssueFuture =
-                          _getBarcodeIssueList().whenComplete(() {
-                        Navigator.of(context).pop();
-                        Provider.of<Platform>(context, listen: false);
-                      });
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('취소'),
-                    onPressed: () {
+
+    showDialog(
+        context: context,
+        barrierColor: AppColors.darkGrey.withOpacity(0.3),
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('바코드 발행',
+                style: TextStyle(
+                    fontSize: context.pWidth * 0.05,
+                    fontFamily: 'SUIT',
+                    fontWeight: context.normalWeight,
+                    color: Colors.black)),
+            content: Text('모바일 바코드를 발행하시겠습니까?',
+                style: TextStyle(
+                    fontSize: context.pWidth * 0.05,
+                    fontFamily: 'SUIT',
+                    fontWeight: context.normalWeight,
+                    color: Colors.black)),
+            actions: <Widget>[
+              TextButton(
+                  child: const Text('확인'),
+                  onPressed: () async {
+                    Provider.of<Platform>(context, listen: false).isLoading =
+                        true;
+                    await _apiService
+                        .issueBarcode(
+                            data.compCd!,
+                            data.reservNo!,
+                            userInfo.phoneNumber!,
+                            userInfo.name!,
+                            userInfo.fcmToken!)
+                        .then((value) {
+                      if (value == 'SUCCESS') {
+                        _barcodeIssueFuture = _getBarcodeIssueList();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(value),
+                            backgroundColor: Colors.black87.withOpacity(0.6),
+                            duration: const Duration(seconds: 2)));
+                      }
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(value),
-            backgroundColor: Colors.black87.withOpacity(0.6),
-            duration: const Duration(seconds: 2)));
-      }
-    }).whenComplete(() =>
-            Provider.of<Platform>(context, listen: false).isLoading = false);
+                      Provider.of<Platform>(context, listen: false).isLoading =
+                          false;
+                    });
+                  }),
+              TextButton(
+                child: const Text('취소'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {

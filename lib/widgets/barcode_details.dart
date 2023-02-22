@@ -21,43 +21,44 @@ class BarcodeDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(
-            top: context.pHeight * 0.02,
-            left: context.pWidth * 0.04,
-            right: context.pWidth * 0.04),
-        padding: EdgeInsets.all(
-          context.pWidth * 0.04,
+      margin: EdgeInsets.only(
+          top: context.pHeight * 0.02,
+          left: context.pWidth * 0.04,
+          right: context.pWidth * 0.04),
+      padding: EdgeInsets.all(
+        context.pWidth * 0.04,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(context.pWidth * 0.06),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.4),
+            spreadRadius: 4,
+            blurRadius: 6,
+            offset: const Offset(5, 8),
+          ),
+        ],
+      ),
+      child: Column(children: [
+        _renderCarFullNo(context),
+        Padding(
+          padding: EdgeInsets.all(context.pHeight * 0.01),
         ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(context.pWidth * 0.06),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              spreadRadius: 4,
-              blurRadius: 6,
-              offset: const Offset(5, 8),
-            ),
-          ],
+        _renderType(context),
+        Padding(
+          padding: EdgeInsets.all(context.pHeight * 0.01),
         ),
-        child: Stack(children: [
-          Column(children: [
-            _renderCarFullNo(context),
-            Padding(
-              padding: EdgeInsets.all(context.pHeight * 0.01),
-            ),
-            _renderType(context),
-            Padding(
-              padding: EdgeInsets.all(context.pHeight * 0.01),
-            ),
-            _renderCustName(context),
-            Padding(
-              padding: EdgeInsets.all(context.pHeight * 0.01),
-            ),
-            _renderGateInTime(context),
-          ]),
-          DarkButton(text: '바코드 발행', onTap: () => onTapIssue)
-        ]));
+        _renderCustName(context),
+        Padding(
+          padding: EdgeInsets.all(context.pHeight * 0.01),
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Expanded(child: _renderGateInTime(context)),
+          DarkButton(text: '바코드 발행', onTap: onTapIssue!)
+        ])
+      ]),
+    );
   }
 
   Widget _renderCarFullNo(BuildContext context) {
@@ -146,7 +147,7 @@ class BarcodeDetails extends StatelessWidget {
       children: [
         Container(
             alignment: Alignment.centerLeft,
-            width: context.pWidth,
+            //width: context.pWidth,
             child: Text('입고시간',
                 style: TextStyle(
                     fontSize: context.pWidth * 0.05,
@@ -157,7 +158,7 @@ class BarcodeDetails extends StatelessWidget {
           padding: EdgeInsets.all(context.pHeight * 0.01),
         ),
         Container(
-            width: context.pWidth,
+            //width: context.pWidth,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(left: context.pWidth * 0.06),
             child: Text(inStoreTime!,

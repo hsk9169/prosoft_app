@@ -206,8 +206,8 @@ class _MainView extends State<MainView> {
   }
 
   Widget _renderMatlName(List<WaitingStatus> list) {
-    final scrapYard = list.isNotEmpty ? list[0].scrapYardCode : 'NULL';
-    final measrGbnCode = list.isNotEmpty ? list[0].measrGbnCode : 'NULL';
+    final scrapYard = list.isNotEmpty ? list[0].scrapYardCode : '';
+    final measrGbnCode = list.isNotEmpty ? list[0].measrGbnCode : '';
     return Padding(
         padding: EdgeInsets.only(
           left: context.pWidth * 0.01,
